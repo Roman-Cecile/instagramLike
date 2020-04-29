@@ -39,13 +39,11 @@ const userController = {
                 return res.send("Cet utilisateur n'existe pas");
             }
 
-            res.render('user', {
-                user: oneUser
-            });
+            res.send(oneUser);
 
         } catch (error) {
             console.trace(error);
-            res.status(500).send(`Nous n'avons pas réussi à afficher' ${req.params.userFirstName}`);
+            res.status(500).send(`Nous n'avons pas réussi à afficher ${req.params.userFirstName}`);
         }
 
     },
@@ -55,23 +53,26 @@ const userController = {
             const data = req.body;
             let errors = [];
 
-            if (!req.body.firstname) {
+            if (!data.firstname) {
                 errors.push("Veuillez renseigner votre prénom");
             }
-            if (!req.body.lastname) {
+            if (!data.lastname) {
                 errors.push("Veuillez renseigner votre nom");
             }
-            if (!req.body.email) {
+            if (!data.email) {
                 errors.push("Veuillez renseigner votre email");
             }
-            if (!req.body.password) {
+            if (!data.password) {
                 errors.push("Veuillez renseigner votre mot de passe");
+            }
+            if (!data.passwordConfirm) {
+                errors.push("Veuillez confirmer votre mot de passe");
+            }else if(data.passwordConfirm !== data.password){
+                errors.push("Le mot de passe n'a pas correctement été confirmé");
             }
 
             if (errors.length) {
-                return res.render('signup', {
-                    errors
-                })
+                return res.send(errors);
             }
 
             const hashedPw = await bcrypt.hashSync(data.password, 10)
@@ -83,7 +84,7 @@ const userController = {
                 password: hashedPw
             });
 
-            res.redirect(`/user/${newUser.id}/${newUser.firstname}`)
+            res.send(newUser)
         } catch (error) {
             console.trace(error);
             res.status(500).send("La création à échoué")
@@ -141,7 +142,7 @@ const userController = {
                 }
             });
             await oneUser.destroy();
-            res.redirect('/signup');
+            res.send("Utilisateur supprimé");
         } catch (error) {
             console.trace(error);
             res.status(500).send("La suppression a échoué");

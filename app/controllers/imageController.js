@@ -86,7 +86,7 @@ const imageController = {
     delete: async (req, res, next) => {
         try {
             const id = req.params.id;
-            const oneImage = await Image.findOne(id);
+            const oneImage = await Image.findByPk(id);
             await oneImage.destroy();
             res.send("Photo supprimée");
         } catch (error) {

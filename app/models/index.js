@@ -1,5 +1,7 @@
 const User = require('./user');
 const Image = require('./image');
+const Comment = require('./comment');
+const Like = require('./like');
 
 // User <-> Image
 User.hasMany(Image, {
@@ -24,8 +26,21 @@ Comment.belongsTo(Image,{
     as: "image"
 })
 
+// Image <-> Comment
+Image.hasMany(Like,{
+    foreignKey: "image_id",
+    as: "likes"
+});
+
+Like.belongsTo(Image,{
+    foreignKey: "image_id",
+    as: "image"
+})
+
+
 module.exports = {
     User,
     Image,
-    Comment
+    Comment,
+    Like
 }
